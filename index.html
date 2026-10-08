@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="ta">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ஸ்ரீ அஷ்டபுஜ மகா காளிகம்பாள் | முன்பதிவு</title>
+<style>
+*{box-sizing:border-box}
+body{
+ margin:0;padding:18px;min-height:100vh;color:white;
+ font-family:Arial,sans-serif;
+ background:linear-gradient(135deg,#10051e,#260a32,#090d25);
+}
+.card{
+ max-width:480px;margin:20px auto;padding:24px;
+ border:1px solid #d7a5ff;border-radius:22px;
+ background:rgba(255,255,255,.07);
+ box-shadow:0 0 24px #a52cff55;
+}
+h1{text-align:center;color:#ffd477;font-size:24px;line-height:1.6}
+.sub{text-align:center;color:#e8caff;line-height:1.8}
+label{display:block;margin-top:15px;color:#ffe0a3}
+input{
+ width:100%;padding:14px;margin-top:7px;
+ border:1px solid #b783e9;border-radius:10px;
+ background:#170d28;color:white;font-size:16px;
+}
+button{
+ width:100%;padding:15px;margin-top:22px;border:0;
+ border-radius:12px;background:linear-gradient(90deg,#ffb52e,#ff5c83);
+ color:#210c28;font-size:17px;font-weight:bold;
+}
+button:disabled{opacity:.6}
+#message{text-align:center;line-height:1.7}
+#ticket{
+ display:none;margin-top:22px;padding:20px;border-radius:15px;
+ background:#fff8e7;color:#321744;text-align:center;
+}
+#ticket h2{color:#8b1b69}
+.token{font-size:48px;font-weight:bold;color:#bd263e}
+.details{text-align:left;line-height:2;overflow-wrap:anywhere}
+.small{text-align:center;font-size:12px;color:#d9c4e9}
+</style>
+</head>
+<body>
+<main class="card">
+<h1>🙏 ஸ்ரீ அஷ்டபுஜ<br>மகா காளிகம்பாள் 🙏</h1>
+<p class="sub">அம்மன் தரிசன முன்பதிவு<br>உங்கள் விவரங்களைப் பதிவு செய்யுங்கள்</p>
+
+<form id="bookingForm">
+<label for="name">பக்தர் பெயர்</label>
+<input id="name" name="name" required maxlength="100" autocomplete="name" placeholder="உங்கள் பெயர்">
+
+<label for="town">ஊர் / பகுதி</label>
+<input id="town" name="town" required maxlength="100" autocomplete="address-level2" placeholder="உங்கள் ஊர்">
+
+<label for="phone">கைபேசி எண்</label>
+<input id="phone" name="phone" type="tel" inputmode="numeric" pattern="[0-9]{10}" maxlength="10" required autocomplete="tel" placeholder="10 இலக்க எண்">
+
+<label for="date">தரிசன தேதி</label>
+<input id="date" name="date" type="date" required>
+
+<button id="submitBtn" type="submit">முன்பதிவு செய்யுங்கள்</button>
+</form>
+
+<p id="message" role="status"></p>
+
+<section id="ticket" aria-live="polite">
+<h2>🙏 முன்பதிவு உறுதிப்பத்திரம் 🙏</h2>
+<p>உங்களுடைய Token எண்</p>
+<div class="token" id="token"></div>
+<div class="details">
+<div><b>பெயர்:</b> <span id="outName"></span></div>
+<div><b>ஊர்:</b> <span id="outTown"></span></div>
+<div><b>கைபேசி:</b> <span id="outPhone"></span></div>
+<div><b>தேதி:</b> <span id="outDate"></span></div>
+</div>
+<p>ஸ்ரீ அஷ்டபுஜ மகா காளிகம்பாள் அருள் கிடைக்கட்டும் 🙏</p>
+<button type="button" id="printBtn">Token Card அச்சிடு / PDF சேமி</button>
+</section>
+<p class="small">உங்கள் விவரங்கள் முன்பதிவுக்காகப் பயன்படுத்தப்படும்.</p>
+</main>
+
+<script>
+const form = document.getElementById("bookingForm");
+const dateInput = document.getElementById("date");
+const message = document.getElementById("message");
+const button = document.getElementById("submitBtn");
+
+function localToday(){
+ const parts = new Intl.DateTimeFormat("en-CA",{
+  timeZone:"Asia/Kolkata",year:"numeric",month:"2-digit",day:"2-digit"
+ }).formatToParts(new Date());
+ const v = {};
+ parts.forEach(p => v[p.type] = p.value);
+ return `${v.year}-${v.month}-${v.day}`;
+}
+dateInput.min = localToday();
+
+form.addEventListener("submit", async function(e){
+ e.preventDefault();
+ message.textContent = "";
+ document.getElementById("ticket").style.display = "none";
+ button.disabled = true;
+ button.textContent = "முன்பதிவு நடைபெறுகிறது...";
+
+ try{
+  const response = await fetch("/api/bookings",{
+   method:"POST",
+   headers:{"Content-Type":"application/json"},
+   body:JSON.stringify({
+    name:form.name.value.trim(),
+    town:form.town.value.trim(),
+    phone:form.phone.value.trim(),
+    date:dateInput.value
+   })
+  });
+
+  const result = await response.json();
+  if(!response.ok || !result.success){
+   throw new Error(result.message || "முன்பதிவு செய்ய முடியவில்லை.");
+  }
+
+  const b = result.booking;
+  document.getElementById("token").textContent = b.token;
+  document.getElementById("outName").textContent = b.name;
+  document.getElementById("outTown").textContent = b.town;
+  document.getElementById("outPhone").textContent = b.phone;
+  document.getElementById("outDate").textContent = b.date;
+  document.getElementById("ticket").style.display = "block";
+  message.textContent = "முன்பதிவு வெற்றிகரமாக முடிந்தது!";
+  document.getElementById("ticket").scrollIntoView({behavior:"smooth"});
+ }catch(err){
+  message.textContent = err.message || "இணைப்பில் பிழை. பின்னர் முயற்சிக்கவும்.";
+ }finally{
+  button.disabled = false;
+  button.textContent = "முன்பதிவு செய்யுங்கள்";
+ }
+});
+
+document.getElementById("printBtn").addEventListener("click",()=>window.print());
+</script>
+<style>
+@media print{
+ body{background:white;color:black;padding:0}
+ body *{visibility:hidden}
+ #ticket,#ticket *{visibility:visible}
+ #ticket{display:block!important;position:absolute;left:0;top:0;width:100%;margin:0}
+ #printBtn{display:none}
+}
+</style>
+</body>
+</html>
