@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="ta">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ஸ்ரீ அஷ்டபுஜ மகா காளிகம்பாள்</title>
+<style>
+*{box-sizing:border-box}
+body{
+ margin:0;padding:20px;min-height:100vh;
+ font-family:Arial,sans-serif;color:#fff;
+ background:linear-gradient(135deg,#10051e,#250b2b,#090d25);
+}
+.card{
+ max-width:480px;margin:25px auto;padding:25px;
+ border:1px solid #d7a5ff;border-radius:22px;
+ background:rgba(255,255,255,.07);
+ box-shadow:0 0 25px #a52cff55;
+}
+h1{text-align:center;color:#ffd477;font-size:25px}
+.sub{text-align:center;color:#e8caff;line-height:1.8}
+label{display:block;margin-top:16px;color:#ffe0a3}
+input{
+ width:100%;padding:14px;margin-top:7px;
+ border:1px solid #b783e9;border-radius:10px;
+ background:#170d28;color:white;font-size:16px;
+}
+button{
+ width:100%;padding:15px;margin-top:22px;
+ border:0;border-radius:12px;
+ background:linear-gradient(90deg,#ffb52e,#ff5c83);
+ color:#210c28;font-size:17px;font-weight:bold;
+}
+.note{text-align:center;font-size:13px;color:#d9c4e9}
+</style>
+</head>
+<body>
+<div class="card">
+<h1>🙏 ஸ்ரீ அஷ்டபுஜ<br>மகா காளிகம்பாள் 🙏</h1>
+<p class="sub">அம்மன் தரிசன முன்பதிவு<br>உங்கள் விவரங்களைப் பதிவு செய்யுங்கள்</p>
+
+<form id="bookingForm">
+<label>பக்தர் பெயர்</label>
+<input name="name" type="text" placeholder="உங்கள் பெயர்" required>
+
+<label>ஊர் / பகுதி</label>
+<input name="town" type="text" placeholder="உங்கள் ஊர்" required>
+
+<label>கைபேசி எண்</label>
+<input name="phone" type="tel" inputmode="numeric"
+pattern="[0-9]{10}" maxlength="10"
+placeholder="10 இலக்க எண்" required>
+
+<label>தரிசன தேதி</label>
+<input name="date" type="date" required>
+
+<button type="submit">முன்பதிவு செய்யுங்கள்</button>
+<p class="note">முன்பதிவு சேவை விரைவில் செயல்படும்.</p>
+</form>
+<div id="result"></div>
+</div>
+<script>
+document.getElementById('bookingForm').addEventListener('submit',function(e){
+ e.preventDefault();
+ document.getElementById('result').textContent=
+ 'நன்றி! முன்பதிவு வசதியை இணைக்கும் பணி நடைபெறுகிறது. இன்னும் முன்பதிவு செய்யப்படவில்லை.';
+});
+</script>
+</body>
+  </html>
